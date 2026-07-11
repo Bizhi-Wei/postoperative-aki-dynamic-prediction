@@ -112,14 +112,14 @@ def configure_text() -> None:
     ]
     v8.RESULTS["Temporal validation and selected parsimonious models"] = [
         "Rolling temporal validation showed stable discrimination: AUROCs ranged from 0.696 to 0.712 at 0 h, 0.711 to 0.738 at 6 h, "
-        "and 0.736 to 0.757 at 24 h across later-year validation blocks (Additional file 1: Table S4). The selected parsimonious "
+        "and 0.736 to 0.757 at 24 h across later-year validation blocks (Additional file 1: Table S5). The selected parsimonious "
         "models used 36 predictors at 0 h and 72 predictors at both 6 h and 24 h. Their heldout AUROCs were 0.726 (95% CI, 0.707-0.748), "
         "0.736 (0.713-0.757), and 0.756 (0.732-0.780), respectively (Table 2)."
     ]
     v8.RESULTS["External validation, calibration, and observability"] = [
         "The eICU strict surgical cohort comprised 30,365 first ICU stays from 197 hospitals; 14,229 (46.9%) were evaluable for "
         "incident AKI. The feature-harmonized portable models yielded AUROCs of 0.673 (95% CI, 0.664-0.683), 0.696 (0.686-0.707), "
-        "and 0.687 (0.674-0.700) at 0 h, 6 h, and 24 h, respectively (Table S5). Calibration slopes were 0.707, 0.846, and 0.351, "
+        "and 0.687 (0.674-0.700) at 0 h, 6 h, and 24 h, respectively (Table S6). Calibration slopes were 0.707, 0.846, and 0.351, "
         "indicating marked calibration deterioration at 24 h.",
         "In heldout eICU hospitals, logistic recalibration improved Brier scores from 0.168 to 0.163 at 0 h, 0.150 to 0.149 at 6 h, "
         "and 0.106 to 0.101 at 24 h; corresponding calibration slopes changed from 0.79 to 1.16, 0.91 to 1.09, and 0.33 to 0.92. "
@@ -128,7 +128,7 @@ def configure_text() -> None:
     v8.RESULTS["Selection-bias sensitivity analysis"] = [
         "Creatinine-record observability was 52.0%, whereas 46.9% of the strict eICU cohort met the full incident-AKI evaluability "
         "definition. In the active-ICU sensitivity analysis, unweighted complete-case AUROCs were 0.674, 0.704, and 0.698; clinical "
-        "inverse-probability weighting yielded 0.693, 0.720, and 0.706 at 0 h, 6 h, and 24 h (Table S6). Under pattern-mixture scenarios "
+        "inverse-probability weighting yielded 0.693, 0.720, and 0.706 at 0 h, 6 h, and 24 h (Table S7). Under pattern-mixture scenarios "
         "in which unobserved AKI risk was 0.5 to 2.0 times observed risk, the implied external 7-day AKI incidence ranged from 17.8% to 35.9%."
     ]
     v8.DISCUSSION.insert(5, (
@@ -169,8 +169,8 @@ def configure_text() -> None:
     checklist_overrides = {
         "12f": "Methods—Model finalization and deployment boundary; Results—Temporal validation and selected parsimonious models",
         "12g": "Methods—External validation, recalibration, and selection sensitivity; Results—External validation, calibration, and observability",
-        "20c": "Additional file 1: Tables S1-S6 and Figures S1-S5",
-        "21": "Results—Dynamic risk sets; Table 2; Additional file 1: Tables S4-S6",
+        "20c": "Additional file 1: Tables S1-S7 and Figures S1-S5",
+        "21": "Results—Dynamic risk sets; Table 2; Additional file 1: Tables S4-S7",
         "23b": "Results—External validation, calibration, and observability; hospital-level calibration heterogeneity analysis",
         "24": "Methods—Model finalization and deployment boundary; v22 versioned research-use artifacts",
         "27a": "Methods—Sample size and missing data; External validation, recalibration, and selection sensitivity; Discussion",
@@ -180,31 +180,42 @@ def configure_text() -> None:
     v8.checklist_location = lambda item: checklist_overrides.get(item, base_checklist_location(item))
 
 
-def external_tables() -> tuple[list[dict[str, str]], list[dict[str, str]]]:
+def supplementary_tables() -> tuple[list[dict[str, str]], list[dict[str, str]], list[dict[str, str]]]:
+    rolling = pd.read_csv(V14 / "model_v14_rolling_temporal_validation_performance.csv")
+    s5 = []
+    for r in rolling.sort_values(["landmark_hours", "validation_block"]).itertuples():
+        s5.append({
+            "Landmark": f"{int(r.landmark_hours)} h", "Model": str(r.selected_model),
+            "Validation period": f"{int(r.validation_year_start)}-{int(r.validation_year_end)}",
+            "Train n": f"{int(r.train_n):,}", "Validation n": f"{int(r.test_n):,}",
+            "Event rate": f"{r.test_event_rate * 100:.1f}%",
+            "AUROC": f"{r.auroc:.3f}", "AUPRC": f"{r.auprc:.3f}", "Brier": f"{r.brier_score:.3f}",
+            "Calibration": f"{r.calibration_intercept:.3f}/{r.calibration_slope:.3f}",
+        })
     perf = pd.read_csv(V16 / "model_v16_portable_external_validation_performance.csv")
     ext = perf.loc[perf["evaluation_dataset"].eq("eICU external validation")].copy()
-    s5 = []
+    s6 = []
     for r in ext.itertuples():
-        s5.append({
+        s6.append({
             "Landmark": f"{int(r.landmark_hours)} h", "Model": str(r.model_family), "n": f"{int(r.n):,}",
             "Event rate": f"{r.event_rate * 100:.1f}%", "AUROC (95% CI)": f"{r.auroc:.3f} ({r.auroc_ci_lower:.3f}-{r.auroc_ci_upper:.3f})",
             "AUPRC": f"{r.auprc:.3f}", "Brier": f"{r.brier_score:.3f}", "Calibration": f"{r.calibration_intercept:.3f}/{r.calibration_slope:.3f}",
         })
     ipw = pd.read_csv(V21 / "analysis_v21_ipw_weighted_external_performance.csv")
     scenario = pd.read_csv(V21 / "analysis_v21_pattern_mixture_aki_incidence.csv")
-    s6 = []
+    s7 = []
     for lm in [0, 6, 24]:
         d = ipw.loc[ipw["landmark_hours"].eq(lm)].set_index("method")
-        s6.append({
+        s7.append({
             "Landmark": f"{lm} h", "Complete-case AUROC": f"{d.loc['unweighted_complete_case', 'auroc']:.3f}",
             "Clinical-IPW AUROC": f"{d.loc['ipw_clinical', 'auroc']:.3f}", "Clinical+hospital-IPW AUROC": f"{d.loc['ipw_clinical_hospital', 'auroc']:.3f}",
             "Complete-case event rate": f"{d.loc['unweighted_complete_case', 'weighted_event_rate'] * 100:.1f}%",
             "Clinical-IPW event rate": f"{d.loc['ipw_clinical', 'weighted_event_rate'] * 100:.1f}%",
         })
     low, high = scenario["implied_population_aki_incidence"].min(), scenario["implied_population_aki_incidence"].max()
-    s6[0]["Pattern-mixture range"] = f"{low * 100:.1f}% to {high * 100:.1f}%"
-    for row in s6[1:]: row["Pattern-mixture range"] = "See 0-h scenario"
-    return s5, s6
+    s7[0]["Pattern-mixture range"] = f"{low * 100:.1f}% to {high * 100:.1f}%"
+    for row in s7[1:]: row["Pattern-mixture range"] = "See 0-h scenario"
+    return s5, s6, s7
 
 
 def final_parsimonious_table(tables: tuple) -> tuple:
@@ -224,23 +235,28 @@ def final_parsimonious_table(tables: tuple) -> tuple:
     return t1, t2, t3, s1, s2, s3, s4
 
 
-def write_extra_supplementary_tables(s5: list[dict[str, str]], s6: list[dict[str, str]]) -> None:
-    v8.latex_table(s5, [(k, k) for k in s5[0]], "Feature-harmonized eICU external validation performance", "tab:s5", "tableS5.tex", landscape=True)
-    v8.latex_table(s6, [(k, k) for k in s6[0]], "External outcome-observability and selection-bias sensitivity", "tab:s6", "tableS6.tex", landscape=True)
-    with (v8.TABLES / "Table_S5_external_validation.csv").open("w", newline="", encoding="utf-8-sig") as f:
+def write_extra_supplementary_tables(s5: list[dict[str, str]], s6: list[dict[str, str]], s7: list[dict[str, str]]) -> None:
+    v8.latex_table(s5, [(k, k) for k in s5[0]], "Rolling temporal validation of selected parsimonious models", "tab:s5", "tableS5.tex", landscape=True)
+    v8.latex_table(s6, [(k, k) for k in s6[0]], "Feature-harmonized eICU external validation performance", "tab:s6", "tableS6.tex", landscape=True)
+    v8.latex_table(s7, [(k, k) for k in s7[0]], "External outcome-observability and selection-bias sensitivity", "tab:s7", "tableS7.tex", landscape=True)
+    with (v8.TABLES / "Table_S5_temporal_validation.csv").open("w", newline="", encoding="utf-8-sig") as f:
         writer = csv.DictWriter(f, fieldnames=list(s5[0])); writer.writeheader(); writer.writerows(s5)
-    with (v8.TABLES / "Table_S6_selection_bias_sensitivity.csv").open("w", newline="", encoding="utf-8-sig") as f:
+    with (v8.TABLES / "Table_S6_external_validation.csv").open("w", newline="", encoding="utf-8-sig") as f:
         writer = csv.DictWriter(f, fieldnames=list(s6[0])); writer.writeheader(); writer.writerows(s6)
+    with (v8.TABLES / "Table_S7_selection_bias_sensitivity.csv").open("w", newline="", encoding="utf-8-sig") as f:
+        writer = csv.DictWriter(f, fieldnames=list(s7[0])); writer.writeheader(); writer.writerows(s7)
 
 
-def extend_supplement_word(s5: list[dict[str, str]], s6: list[dict[str, str]]) -> None:
+def extend_supplement_word(s5: list[dict[str, str]], s6: list[dict[str, str]], s7: list[dict[str, str]]) -> None:
     path = OUT / "additional_file_1_supplementary_material_en.docx"
     doc = Document(path)
     v8.landscape(doc)
-    doc.add_heading("Additional external validation tables", level=1)
-    v8.add_table(doc, "Table S5", "Feature-harmonized eICU external validation performance", s5, [(k, k) for k in s5[0]],
+    doc.add_heading("Additional validation and selection-bias tables", level=1)
+    v8.add_table(doc, "Table S5", "Rolling temporal validation of selected parsimonious models", s5, [(k, k) for k in s5[0]],
+                 [700, 1350, 1300, 850, 1000, 1000, 850, 850, 750, 1150], "Rolling validation blocks use earlier calendar years for model fitting and later years for evaluation; calibration is intercept/slope.", font=6.4)
+    v8.add_table(doc, "Table S6", "Feature-harmonized eICU external validation performance", s6, [(k, k) for k in s6[0]],
                  [700, 1300, 750, 1050, 1800, 900, 800, 1300], "Portable models use harmonized predictors; calibration is intercept/slope.", font=7)
-    v8.add_table(doc, "Table S6", "External outcome-observability and selection-bias sensitivity", s6, [(k, k) for k in s6[0]],
+    v8.add_table(doc, "Table S7", "External outcome-observability and selection-bias sensitivity", s7, [(k, k) for k in s7[0]],
                  [700, 1200, 1200, 1400, 1300, 1300, 1900], "IPW assumes missing at random conditional on observed covariates. Pattern-mixture scenarios range from an unobserved-to-observed AKI risk ratio of 0.5 to 2.0.", font=6.6)
     doc.save(path)
 
@@ -248,7 +264,7 @@ def extend_supplement_word(s5: list[dict[str, str]], s6: list[dict[str, str]]) -
 def update_supplement_tex() -> None:
     path = v8.LATEX / "supplement.tex"
     text = path.read_text(encoding="utf-8")
-    text = text.replace(r"\input{tables/tableS4.tex}\clearpage", r"\input{tables/tableS4.tex}\clearpage\input{tables/tableS5.tex}\clearpage\input{tables/tableS6.tex}\clearpage")
+    text = text.replace(r"\input{tables/tableS4.tex}\clearpage", r"\input{tables/tableS4.tex}\clearpage\input{tables/tableS5.tex}\clearpage\input{tables/tableS6.tex}\clearpage\input{tables/tableS7.tex}\clearpage")
     path.write_text(text, encoding="utf-8")
 
 
@@ -270,7 +286,7 @@ def write_lock_files() -> None:
         f"Target journal: Critical Care (Research article).\n\n"
         f"- English main manuscript: LaTeX and Word\n- Supplementary material: LaTeX and Word\n"
         f"- References: {len(v8.REFS)} Vancouver-style entries\n- Main display items: 3 tables and 4 figures\n"
-        f"- Additional file 1: Tables S1-S6 and Figures S1-S5\n- Additional file 2: TRIPOD+AI checklist\n"
+        f"- Additional file 1: Tables S1-S7 and Figures S1-S5\n- Additional file 2: TRIPOD+AI checklist\n"
         f"- Status: locked research manuscript; public repository and v1.0.1 release fixed; archived DOI remains to be provided before publication.\n",
         encoding="utf-8",
     )
@@ -284,9 +300,9 @@ def main() -> None:
     for path in [OUT, v8.LATEX, v8.FIGURES, v8.TABLES, v8.QA]: path.mkdir(parents=True, exist_ok=True)
     v8.copy_figures()
     tables = final_parsimonious_table(v8.standardize_tables())
-    s5, s6 = external_tables()
-    v8.build_latex(tables); write_extra_supplementary_tables(s5, s6); update_supplement_tex()
-    v8.build_word_main(tables); v8.build_word_supplement(tables); extend_supplement_word(s5, s6)
+    s5, s6, s7 = supplementary_tables()
+    v8.build_latex(tables); write_extra_supplementary_tables(s5, s6, s7); update_supplement_tex()
+    v8.build_word_main(tables); v8.build_word_supplement(tables); extend_supplement_word(s5, s6, s7)
     v8.build_checklist(); v8.build_availability_doc(); v8.write_audits(); write_lock_files()
     print(f"Locked manuscript package: {OUT}")
     print(f"Abstract words: {v8.abstract_word_count()}; main text words: {v8.main_word_count()}; references: {len(v8.REFS)}")

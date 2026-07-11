@@ -602,7 +602,7 @@ __AVAILABILITY__ \cite{MIMIC2024}
 \subsection*{Acknowledgements} __ACKNOWLEDGEMENTS__
 \subsection*{AI-assisted editing disclosure} __AI_DISCLOSURE__
 \section*{Additional files}
-Additional file 1 (.docx and .pdf): Supplementary Tables S1-S4 and Supplementary Figures S1-S5.\\
+Additional file 1 (.docx and .pdf): Supplementary Tables S1-S7 and Supplementary Figures S1-S5.\\
 Additional file 2 (.docx and .csv): Completed TRIPOD+AI checklist.
 \begin{thebibliography}{99}
 __REFS__
@@ -769,7 +769,7 @@ def build_word_main(tables):
     }
     for heading, text in declarations.items(): doc.add_heading(heading, level=2); add_para(doc, text, indent=False)
     doc.add_heading("Additional files", level=1)
-    add_para(doc, "Additional file 1 (.docx and .pdf): Supplementary Tables S1-S4 and Supplementary Figures S1-S5.", indent=False)
+    add_para(doc, "Additional file 1 (.docx and .pdf): Supplementary Tables S1-S7 and Supplementary Figures S1-S5.", indent=False)
     add_para(doc, "Additional file 2 (.docx and .csv): Completed TRIPOD+AI checklist.", indent=False)
     doc.add_heading("References", level=1)
     for i, (_key, citation, *_rest) in enumerate(REFS, 1):
@@ -912,7 +912,7 @@ Author: Bizhi Wei, Pu Ai Medical School, Shaoyang University.
 - Structured abstract: {abstract_word_count()} words (journal maximum: 350)
 - Main text: {main_word_count()} words
 - Main display items: 3 tables and 4 figures
-- Additional file 1: Tables S1-S4 and Figures S1-S5
+- Additional file 1: Tables S1-S7 and Figures S1-S5
 - Additional file 2: TRIPOD+AI checklist
 - References: {len(REFS)}, Vancouver style
 - Graphical abstract: 920 x 300 px, PNG/SVG/PDF

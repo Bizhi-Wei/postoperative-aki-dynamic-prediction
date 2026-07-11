@@ -165,8 +165,8 @@ BODY_TRANSLATIONS = {
         "作者感谢 MIMIC-IV 数据库和 PhysioNet 的开发者与维护者。",
     "During manuscript preparation, the authors used ChatGPT for language editing, structural organization, and formatting assistance. The authors reviewed and verified all content, analyses, interpretations, and references, and take full responsibility for the final manuscript.":
         "稿件准备过程中，作者使用 ChatGPT 进行语言编辑、结构组织和格式协助。作者已审阅并核实所有内容、分析、解释和参考文献，并对最终稿件承担全部责任。",
-    "Additional file 1 (.docx and .pdf): Supplementary Tables S1-S4 and Supplementary Figures S1-S5.":
-        "附加文件 1（.docx 和 .pdf）：补充表 S1–S4 和补充图 S1–S5。",
+    "Additional file 1 (.docx and .pdf): Supplementary Tables S1-S7 and Supplementary Figures S1-S5.":
+        "附加文件 1（.docx 和 .pdf）：补充表 S1–S7 和补充图 S1–S5。",
     "Additional file 2 (.docx and .csv): Completed TRIPOD+AI checklist.":
         "附加文件 2（.docx 和 .csv）：已完成的 TRIPOD+AI 核对清单。",
     "Table 1. Baseline characteristics by incident acute kidney injury status":
