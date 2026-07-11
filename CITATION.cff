@@ -6,7 +6,4 @@ authors:
   - family-names: Wei
     given-names: Bizhi
     affiliation: "Pu Ai Medical School, Shaoyang University"
-  - family-names: Yuan
-    given-names: Caiyun
-    affiliation: "Pu Ai Medical School, Shaoyang University"
 repository-code: "https://github.com/Bizhi-Wei/postoperative-aki-dynamic-prediction"

@@ -159,8 +159,8 @@ BODY_TRANSLATIONS = {
     "The authors declare that they have no competing interests.": "作者声明不存在利益冲突。",
     "This research received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors.":
         "本研究未获得公共、商业或非营利部门任何资助机构的专项资助。",
-    "Bizhi Wei: Conceptualization, methodology, investigation, data curation, formal analysis, visualization, writing – original draft, writing – review and editing, project administration, and supervision. Caiyun Yuan: Data curation, validation, literature review, manuscript revision, and writing – review and editing. Both authors read and approved the final manuscript.":
-        "Bizhi Wei：概念化、方法学、调查、数据整理、正式分析、可视化、初稿撰写、审阅与编辑、项目管理和监督。Caiyun Yuan：数据整理、验证、文献综述、稿件修订以及审阅与编辑。两位作者均阅读并批准最终稿件。",
+    "Bizhi Wei: Conceptualization, methodology, investigation, data curation, formal analysis, visualization, writing – original draft, writing – review and editing, project administration, and supervision. The author read and approved the final manuscript.":
+        "Bizhi Wei：概念化、方法学、调查、数据整理、正式分析、可视化、初稿撰写、审阅与编辑、项目管理和监督。作者已阅读并批准最终稿件。",
     "The authors thank the developers and maintainers of the MIMIC-IV database and PhysioNet.":
         "作者感谢 MIMIC-IV 数据库和 PhysioNet 的开发者与维护者。",
     "During manuscript preparation, the authors used ChatGPT for language editing, structural organization, and formatting assistance. The authors reviewed and verified all content, analyses, interpretations, and references, and take full responsibility for the final manuscript.":
@@ -387,7 +387,7 @@ CHECKLIST_TEXT = """# 投稿前人工核对清单
 
 ## 1. 作者、单位和声明
 
-- [ ] 作者顺序是否最终确认：Bizhi Wei*, Caiyun Yuan
+- [ ] 作者信息是否最终确认：Bizhi Wei*（唯一作者）
 - [ ] 通讯作者姓名、地址、邮箱是否正确
 - [ ] 单位英文是否与学校/期刊系统一致
 - [ ] Ethics、Consent、Funding、Competing interests、Authors' contributions 是否符合目标期刊格式

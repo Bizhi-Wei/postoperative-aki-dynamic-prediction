@@ -36,7 +36,7 @@ TITLE = (
     "in surgical intensive care: a retrospective MIMIC-IV cohort study"
 )
 RUNNING_TITLE = "Dynamic prediction of postoperative AKI"
-AUTHORS_WORD = "Bizhi Wei¹*, Caiyun Yuan¹"
+AUTHORS_WORD = "Bizhi Wei¹*"
 AFFILIATION_WORD = "¹ Pu Ai Medical School, Shaoyang University, Shaoyang 422000, Hunan, China"
 CORRESPONDENCE_WORD = (
     "*Correspondence: Bizhi Wei, Pu Ai Medical School, Shaoyang University, "
@@ -64,8 +64,7 @@ COMPETING_INTERESTS_STATEMENT = "The authors declare that they have no competing
 CONTRIBUTIONS_STATEMENT = (
     "Bizhi Wei: Conceptualization, methodology, investigation, data curation, formal analysis, visualization, "
     "writing – original draft, writing – review and editing, project administration, and supervision. "
-    "Caiyun Yuan: Data curation, validation, literature review, manuscript revision, and writing – review and editing. "
-    "Both authors read and approved the final manuscript."
+    "The author read and approved the final manuscript."
 )
 ACKNOWLEDGEMENTS_STATEMENT = "The authors thank the developers and maintainers of the MIMIC-IV database and PhysioNet."
 AI_DISCLOSURE_STATEMENT = (
@@ -565,7 +564,7 @@ def build_latex(tables):
 \usepackage[numbers,sort&compress]{natbib}
 \doublespacing\linenumbers\captionsetup{font=small,labelfont=bf}
 \title{__TITLE__}
-\author{Bizhi Wei\textsuperscript{1*}, Caiyun Yuan\textsuperscript{1}\\{}
+\author{Bizhi Wei\textsuperscript{1*}\\{}
 \textsuperscript{1}Pu Ai Medical School, Shaoyang University, Shaoyang 422000, Hunan, China\\{}
 \textsuperscript{*}Correspondence: Bizhi Wei\\{}
 Pu Ai Medical School, Shaoyang University, Shaoyang 422000, Hunan, China\\{}
@@ -637,7 +636,7 @@ __FIGURES__
 \usepackage{graphicx,booktabs,longtable,pdflscape,caption,setspace,hyperref}\onehalfspacing
 \begin{document}\begin{center}{\Large\bfseries Additional file 1: Supplementary material}\\[8pt]
 __TITLE__\\[8pt]
-Bizhi Wei\textsuperscript{1*}, Caiyun Yuan\textsuperscript{1}\\
+Bizhi Wei\textsuperscript{1*}\\
 \textsuperscript{1}Pu Ai Medical School, Shaoyang University, Shaoyang 422000, Hunan, China\\
 \textsuperscript{*}Correspondence: Bizhi Wei; 15619056250wbz@gmail.com
 \end{center}
@@ -908,7 +907,7 @@ def write_audits():
 
 Target journal assumed: Critical Care (Research article).
 
-Authors: Bizhi Wei and Caiyun Yuan, Pu Ai Medical School, Shaoyang University.
+Author: Bizhi Wei, Pu Ai Medical School, Shaoyang University.
 
 - Structured abstract: {abstract_word_count()} words (journal maximum: 350)
 - Main text: {main_word_count()} words
