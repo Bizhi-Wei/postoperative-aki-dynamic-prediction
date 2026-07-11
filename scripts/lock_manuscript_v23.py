@@ -22,6 +22,7 @@ V14 = ROOT / "outputs" / "modeling_v14_final_sensitivities"
 V16 = ROOT / "outputs" / "modeling_v16_eicu_external_validation"
 V17 = ROOT / "outputs" / "modeling_v17_eicu_recalibration_heterogeneity"
 V21 = ROOT / "outputs" / "modeling_v21_eicu_selection_bias_sensitivity"
+V24 = ROOT / "outputs" / "manuscript_figure_v24_external_validation"
 
 spec = importlib.util.spec_from_file_location("v8", ROOT / "scripts" / "build_manuscript_package_v8.py")
 v8 = importlib.util.module_from_spec(spec)
@@ -40,6 +41,7 @@ def configure_paths() -> None:
     v8.QA = OUT / "qa"
     v8.ASSETS = ROOT / "scripts" / "assets"
     v8.GRAPHICAL = ROOT / "outputs" / "_v8_figure_stage"
+    v8.EXTRA_FIGURE_DIRS = [V24]
 
 
 def configure_text() -> None:
@@ -119,11 +121,13 @@ def configure_text() -> None:
     v8.RESULTS["External validation, calibration, and observability"] = [
         "The eICU strict surgical cohort comprised 30,365 first ICU stays from 197 hospitals; 14,229 (46.9%) were evaluable for "
         "incident AKI. The feature-harmonized portable models yielded AUROCs of 0.673 (95% CI, 0.664-0.683), 0.696 (0.686-0.707), "
-        "and 0.687 (0.674-0.700) at 0 h, 6 h, and 24 h, respectively (Table S6). Calibration slopes were 0.707, 0.846, and 0.351, "
+        "and 0.687 (0.674-0.700) at 0 h, 6 h, and 24 h, respectively (Fig. 4; Table 3; Additional file 1: Table S6). "
+        "Calibration slopes were 0.707, 0.846, and 0.351, "
         "indicating marked calibration deterioration at 24 h.",
         "In heldout eICU hospitals, logistic recalibration improved Brier scores from 0.168 to 0.163 at 0 h, 0.150 to 0.149 at 6 h, "
         "and 0.106 to 0.101 at 24 h; corresponding calibration slopes changed from 0.79 to 1.16, 0.91 to 1.09, and 0.33 to 0.92. "
-        "In the active-ICU competing-risk sensitivity analysis, recalibrated AUROCs were 0.706, 0.725, and 0.678 at 0 h, 6 h, and 24 h."
+        "These hospital-held-out calibration updates are shown in Fig. 4 and Table 3. In the active-ICU competing-risk sensitivity "
+        "analysis, recalibrated AUROCs were 0.706, 0.725, and 0.678 at 0 h, 6 h, and 24 h."
     ]
     v8.RESULTS["Selection-bias sensitivity analysis"] = [
         "Creatinine-record observability was 52.0%, whereas 46.9% of the strict eICU cohort met the full incident-AKI evaluability "
@@ -163,14 +167,39 @@ def configure_text() -> None:
                           "Receiver-operating-characteristic curves for four development-benchmark model families at ICU admission, 6 h, and 24 h. Landmark populations and remaining outcome windows differ and should not be interpreted as paired longitudinal comparisons.")
     v8.FIGURE_INFO[2] = ("Fig3", "Figure_3_calibration_DCA", "Calibration and clinical net benefit",
                           "Top row: development-benchmark observed versus predicted risk in ten equal-frequency groups. Bottom row: decision curves relative to treat-all and treat-none strategies. DCA, decision-curve analysis.")
+    v8.FIGURE_INFO[3] = (
+        "Fig4", "Figure_4_eicu_external_validation", "eICU external validation and hospital-held-out recalibration",
+        "Panels a-c show receiver-operating-characteristic curves in the full outcome-evaluable eICU cohort, with patient-level bootstrap 95% confidence intervals. Panels d-f show observed versus predicted AKI risk by decile in held-out hospitals before and after logistic recalibration learned in separate calibration hospitals. Recalibration changes the probability scale but not rank-based discrimination."
+    )
+    v8.SUPP_FIGURE_INFO.append((
+        "FigS6", "Figure_4_SHAP_6h_24h", "Global feature importance at 6 and 24 hours",
+        "Mean absolute SHAP values for the 12 leading XGBoost features. Values quantify global model attribution and do not represent causal or modifiable effects."
+    ))
+    v8.RESULTS["Model attribution and subgroup performance"][0] = v8.RESULTS["Model attribution and subgroup performance"][0].replace("(Fig. 4).", "(Additional file 1: Fig. S6).")
+    v8.RESULTS["Sensitivity analyses"][0] = v8.RESULTS["Sensitivity analyses"][0].replace("Table 3)", "Table S4)")
+    v8.TABLE3_TITLE = "eICU external validation and hospital-held-out recalibration"
+    v8.TABLE3_LABEL = "tab:external"
+    v8.TABLE3_COLUMNS = [
+        ("Landmark", "Landmark"), ("Model", "Model"), ("External n", "External n"),
+        ("Event rate", "Event rate"), ("External AUROC (95% CI)", "External AUROC (95% CI)"),
+        ("External Brier/slope", "External Brier/slope"), ("Held-out n", "Held-out n"),
+        ("Frozen Brier/slope", "Frozen Brier/slope"), ("Updated Brier/slope", "Updated Brier/slope"),
+    ]
+    v8.TABLE3_WIDTHS = [700, 1200, 950, 950, 1800, 1450, 950, 1450, 1500]
+    v8.TABLE3_FOOTNOTE = (
+        "External AUROC was estimated in the full outcome-evaluable eICU cohort. Recalibration parameters were learned in 80% "
+        "of hospitals and applied unchanged to the held-out 20%; calibration entries are Brier score/slope. Logistic recalibration "
+        "does not alter rank-based AUROC."
+    )
     v8.REFS.append(("Pollard2018", "Pollard TJ, Johnson AEW, Raffa JD, Celi LA, Mark RG, Badawi O. The eICU Collaborative Research Database, a freely available multi-center database for critical care research. Sci Data. 2018;5:180178. doi:10.1038/sdata.2018.178.", "10.1038/sdata.2018.178", "30204154", "external validation database"))
     v8.REF_INDEX = {key: i + 1 for i, (key, *_rest) in enumerate(v8.REFS)}
     base_checklist_location = v8.checklist_location
     checklist_overrides = {
         "12f": "Methods—Model finalization and deployment boundary; Results—Temporal validation and selected parsimonious models",
         "12g": "Methods—External validation, recalibration, and selection sensitivity; Results—External validation, calibration, and observability",
-        "20c": "Additional file 1: Tables S1-S7 and Figures S1-S5",
+        "20c": "Additional file 1: Tables S1-S7 and Figures S1-S6",
         "21": "Results—Dynamic risk sets; Table 2; Additional file 1: Tables S4-S7",
+        "23a": "Results—Model performance and external validation; Figures 2-4; Tables 2-3",
         "23b": "Results—External validation, calibration, and observability; hospital-level calibration heterogeneity analysis",
         "24": "Methods—Model finalization and deployment boundary; v22 versioned research-use artifacts",
         "27a": "Methods—Sample size and missing data; External validation, recalibration, and selection sensitivity; Discussion",
@@ -218,6 +247,26 @@ def supplementary_tables() -> tuple[list[dict[str, str]], list[dict[str, str]], 
     return s5, s6, s7
 
 
+def main_external_validation_table() -> list[dict[str, str]]:
+    performance = pd.read_csv(V16 / "model_v16_portable_external_validation_performance.csv")
+    performance = performance.loc[performance["evaluation_dataset"].eq("eICU external validation")].set_index("landmark_hours")
+    recalibration = pd.read_csv(V17 / "model_v17_external_recalibration_performance.csv")
+    rows = []
+    for landmark in [0, 6, 24]:
+        external = performance.loc[landmark]
+        raw = recalibration.loc[(recalibration["landmark_hours"].eq(landmark)) & recalibration["method"].eq("frozen_unrecalibrated")].iloc[0]
+        updated = recalibration.loc[(recalibration["landmark_hours"].eq(landmark)) & recalibration["method"].eq("logistic_recalibration_update")].iloc[0]
+        rows.append({
+            "Landmark": f"{landmark} h", "Model": str(external.model_family), "External n": f"{int(external.n):,}",
+            "Event rate": f"{external.event_rate * 100:.1f}%",
+            "External AUROC (95% CI)": f"{external.auroc:.3f} ({external.auroc_ci_lower:.3f}-{external.auroc_ci_upper:.3f})",
+            "External Brier/slope": f"{external.brier_score:.3f}/{external.calibration_slope:.2f}",
+            "Held-out n": f"{int(raw.n):,}", "Frozen Brier/slope": f"{raw.brier_score:.3f}/{raw.calibration_slope:.2f}",
+            "Updated Brier/slope": f"{updated.brier_score:.3f}/{updated.calibration_slope:.2f}",
+        })
+    return rows
+
+
 def final_parsimonious_table(tables: tuple) -> tuple:
     t1, t2, t3, s1, s2, s3, s4 = tables
     final = pd.read_csv(V14 / "model_v14_selected_parsimonious_model_finalization.csv").set_index("landmark_hours")
@@ -232,7 +281,13 @@ def final_parsimonious_table(tables: tuple) -> tuple:
         row["Brier score"] = f"{r['brier_score']:.3f}"
         row["Calibration intercept"] = f"{calibrations[lm][0]:.3f}"
         row["Calibration slope"] = f"{calibrations[lm][1]:.3f}"
-    return t1, t2, t3, s1, s2, s3, s4
+    external = main_external_validation_table()
+    old_table3 = v8.TABLES / "Table_3_sensitivity_analyses_24h.csv"
+    if old_table3.exists():
+        old_table3.unlink()
+    with (v8.TABLES / "Table_3_eicu_external_validation_recalibration.csv").open("w", newline="", encoding="utf-8-sig") as f:
+        writer = csv.DictWriter(f, fieldnames=list(external[0])); writer.writeheader(); writer.writerows(external)
+    return t1, t2, external, s1, s2, s3, s4
 
 
 def write_extra_supplementary_tables(s5: list[dict[str, str]], s6: list[dict[str, str]], s7: list[dict[str, str]]) -> None:
@@ -286,7 +341,7 @@ def write_lock_files() -> None:
         f"Target journal: Critical Care (Research article).\n\n"
         f"- English main manuscript: LaTeX and Word\n- Supplementary material: LaTeX and Word\n"
         f"- References: {len(v8.REFS)} Vancouver-style entries\n- Main display items: 3 tables and 4 figures\n"
-        f"- Additional file 1: Tables S1-S7 and Figures S1-S5\n- Additional file 2: TRIPOD+AI checklist\n"
+        f"- Additional file 1: Tables S1-S7 and Figures S1-S6\n- Additional file 2: TRIPOD+AI checklist\n"
         f"- Status: locked research manuscript; public repository and v1.0.1 release fixed; archived DOI remains to be provided before publication.\n",
         encoding="utf-8",
     )

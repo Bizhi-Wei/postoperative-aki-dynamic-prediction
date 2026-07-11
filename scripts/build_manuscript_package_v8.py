@@ -25,6 +25,7 @@ TABLES = OUT / "tables"
 QA = OUT / "qa"
 ASSETS = ROOT / "scripts" / "assets"
 GRAPHICAL = ROOT / "outputs" / "_v8_figure_stage"
+EXTRA_FIGURE_DIRS: list[Path] = []
 
 spec = importlib.util.spec_from_file_location("v7builder", ROOT / "scripts" / "build_manuscript_package_v7.py")
 v7 = importlib.util.module_from_spec(spec)
@@ -343,6 +344,16 @@ SUPP_FIGURE_INFO = [
     ("FigS5", "Figure_S5_predictor_missingness", "Missingness of pre-index laboratory predictors", "Percent missingness for laboratory predictors with more than 40% missing data across landmark datasets."),
 ]
 
+TABLE3_TITLE = "Sensitivity analyses at the 24-hour landmark"
+TABLE3_LABEL = "tab:sensitivity"
+TABLE3_COLUMNS = [
+    ("Sensitivity analysis", "Analysis"), ("Model", "Model"),
+    ("Full/reference AUROC", "Reference AUROC"), ("Sensitivity AUROC", "Sensitivity AUROC"),
+    ("ΔAUROC (95% paired CI)", "AUROC difference (95% CI)"),
+]
+TABLE3_WIDTHS = [2750, 1800, 1800, 1800, 2850]
+TABLE3_FOOTNOTE = "AUROC differences were estimated in identical test patients using paired patient-level bootstrap resampling."
+
 REFS = [
     ("Boyer2022", "Boyer N, Eldridge J, Prowle JR, Forni LG. Postoperative acute kidney injury. Clin J Am Soc Nephrol. 2022;17:1535-1545. doi:10.2215/CJN.16541221.", "10.2215/CJN.16541221", "35710717", "postoperative AKI context"),
     ("Prowle2021", "Prowle JR, Forni LG, Bell M, et al. Postoperative acute kidney injury in adult non-cardiac surgery: joint consensus report. Nat Rev Nephrol. 2021;17:605-618. doi:10.1038/s41581-021-00418-2.", "10.1038/s41581-021-00418-2", "33976395", "definition and perioperative context"),
@@ -514,7 +525,11 @@ def copy_figures():
     FIGURES.mkdir(parents=True, exist_ok=True)
     for short, source, _title, _legend in FIGURE_INFO + SUPP_FIGURE_INFO:
         for ext in ["png", "pdf", "svg"]:
-            shutil.copy2(V6 / "figures" / f"{source}.{ext}", FIGURES / f"{short}.{ext}")
+            candidates = [V6 / "figures" / f"{source}.{ext}"] + [path / f"{source}.{ext}" for path in EXTRA_FIGURE_DIRS]
+            match = next((path for path in candidates if path.exists()), None)
+            if match is None:
+                raise FileNotFoundError(f"Figure source not found: {source}.{ext}")
+            shutil.copy2(match, FIGURES / f"{short}.{ext}")
     for ext in ["png", "pdf", "svg"]:
         shutil.copy2(GRAPHICAL / f"graphical_abstract.{ext}", FIGURES / f"Graphical_Abstract.{ext}")
 
@@ -533,9 +548,7 @@ def build_latex(tables):
                      ("AUROC (95% CI)", "AUROC (95% CI)"), ("AUPRC (95% CI)", "AUPRC (95% CI)"), ("Brier score", "Brier score"),
                      ("Calibration intercept", "Intercept"), ("Calibration slope", "Slope")],
                 "Performance of selected models at each prediction landmark", "tab:selected", "table2.tex", landscape=True)
-    latex_table(t3, [("Sensitivity analysis", "Analysis"), ("Model", "Model"), ("Full/reference AUROC", "Reference AUROC"),
-                     ("Sensitivity AUROC", "Sensitivity AUROC"), ("ΔAUROC (95% paired CI)", "AUROC difference (95% CI)")],
-                "Sensitivity analyses at the 24-hour landmark", "tab:sensitivity", "table3.tex", landscape=True)
+    latex_table(t3, TABLE3_COLUMNS, TABLE3_TITLE, TABLE3_LABEL, "table3.tex", landscape=True)
     latex_table(s1, [("time", "Landmark"), ("model", "Model"), ("n", "Test n"), ("event", "Event rate"), ("auroc", "AUROC (95% CI)"),
                      ("auprc", "AUPRC (95% CI)"), ("brier", "Brier"), ("cal", "Intercept/slope"), ("youden", "Youden threshold (sensitivity/specificity)")],
                 "Performance of all models across prediction landmarks", "tab:s1", "tableS1.tex", landscape=True)
@@ -602,7 +615,7 @@ __AVAILABILITY__ \cite{MIMIC2024}
 \subsection*{Acknowledgements} __ACKNOWLEDGEMENTS__
 \subsection*{AI-assisted editing disclosure} __AI_DISCLOSURE__
 \section*{Additional files}
-Additional file 1 (.docx and .pdf): Supplementary Tables S1-S7 and Supplementary Figures S1-S5.\\
+Additional file 1 (.docx and .pdf): Supplementary Tables S1-S7 and Supplementary Figures S1-S6.\\
 Additional file 2 (.docx and .csv): Completed TRIPOD+AI checklist.
 \begin{thebibliography}{99}
 __REFS__
@@ -707,6 +720,7 @@ def portrait(doc):
 def add_table(doc, number, title, rows, columns, widths, legend="", font=8):
     if number or title:
         p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.paragraph_format.keep_with_next = True
         caption = f"{number}. {title}" if number else title
         r = p.add_run(caption); set_font(r, 10, bold=True)
     table = doc.add_table(rows=1, cols=len(columns)); table.alignment = WD_TABLE_ALIGNMENT.CENTER; table.style = "Table Grid"; table.autofit = False
@@ -769,7 +783,7 @@ def build_word_main(tables):
     }
     for heading, text in declarations.items(): doc.add_heading(heading, level=2); add_para(doc, text, indent=False)
     doc.add_heading("Additional files", level=1)
-    add_para(doc, "Additional file 1 (.docx and .pdf): Supplementary Tables S1-S7 and Supplementary Figures S1-S5.", indent=False)
+    add_para(doc, "Additional file 1 (.docx and .pdf): Supplementary Tables S1-S7 and Supplementary Figures S1-S6.", indent=False)
     add_para(doc, "Additional file 2 (.docx and .csv): Completed TRIPOD+AI checklist.", indent=False)
     doc.add_heading("References", level=1)
     for i, (_key, citation, *_rest) in enumerate(REFS, 1):
@@ -785,10 +799,7 @@ def build_word_main(tables):
                ("AUROC (95% CI)", "AUROC (95% CI)"), ("AUPRC (95% CI)", "AUPRC (95% CI)"), ("Brier score", "Brier"),
                ("Calibration intercept", "Intercept"), ("Calibration slope", "Slope")],
               [850, 1500, 900, 950, 1850, 1850, 900, 1000, 900], "Confidence intervals were obtained by patient-level bootstrap resampling of the held-out test set.", font=7.5)
-    add_table(doc, "Table 3", "Sensitivity analyses at the 24-hour landmark", t3,
-              [("Sensitivity analysis", "Analysis"), ("Model", "Model"), ("Full/reference AUROC", "Reference AUROC"),
-               ("Sensitivity AUROC", "Sensitivity AUROC"), ("ΔAUROC (95% paired CI)", "AUROC difference (95% CI)")],
-              [2750, 1800, 1800, 1800, 2850], "AUROC differences were estimated in identical test patients using paired patient-level bootstrap resampling.")
+    add_table(doc, "Table 3", TABLE3_TITLE, t3, TABLE3_COLUMNS, TABLE3_WIDTHS, TABLE3_FOOTNOTE, font=7)
     portrait(doc); doc.add_heading("Figure legends", level=1)
     for i, (_short, _source, title, legend) in enumerate(FIGURE_INFO, 1): add_para(doc, f"Figure {i}. {title}. {legend}", indent=False)
     path = OUT / "critical_care_main_manuscript_en.docx"; doc.save(path); return path
@@ -912,7 +923,7 @@ Author: Bizhi Wei, Pu Ai Medical School, Shaoyang University.
 - Structured abstract: {abstract_word_count()} words (journal maximum: 350)
 - Main text: {main_word_count()} words
 - Main display items: 3 tables and 4 figures
-- Additional file 1: Tables S1-S7 and Figures S1-S5
+- Additional file 1: Tables S1-S7 and Figures S1-S6
 - Additional file 2: TRIPOD+AI checklist
 - References: {len(REFS)}, Vancouver style
 - Graphical abstract: 920 x 300 px, PNG/SVG/PDF

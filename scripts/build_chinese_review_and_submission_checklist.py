@@ -165,8 +165,8 @@ BODY_TRANSLATIONS = {
         "作者感谢 MIMIC-IV 数据库和 PhysioNet 的开发者与维护者。",
     "During manuscript preparation, the authors used ChatGPT for language editing, structural organization, and formatting assistance. The authors reviewed and verified all content, analyses, interpretations, and references, and take full responsibility for the final manuscript.":
         "稿件准备过程中，作者使用 ChatGPT 进行语言编辑、结构组织和格式协助。作者已审阅并核实所有内容、分析、解释和参考文献，并对最终稿件承担全部责任。",
-    "Additional file 1 (.docx and .pdf): Supplementary Tables S1-S7 and Supplementary Figures S1-S5.":
-        "附加文件 1（.docx 和 .pdf）：补充表 S1–S7 和补充图 S1–S5。",
+    "Additional file 1 (.docx and .pdf): Supplementary Tables S1-S7 and Supplementary Figures S1-S6.":
+        "附加文件 1（.docx 和 .pdf）：补充表 S1–S7 和补充图 S1–S6。",
     "Additional file 2 (.docx and .csv): Completed TRIPOD+AI checklist.":
         "附加文件 2（.docx 和 .csv）：已完成的 TRIPOD+AI 核对清单。",
     "Table 1. Baseline characteristics by incident acute kidney injury status":
@@ -402,6 +402,7 @@ CHECKLIST_TEXT = """# 投稿前人工核对清单
 - [ ] 0 h、6 h、24 h 风险集人数和事件数是否一致
 - [ ] 主要模型 AUROC/AUPRC/Brier 是否与表格一致
 - [ ] no-creatinine 和 pre-index baseline-only 敏感性分析数字是否与补充材料一致
+- [ ] eICU 可评价样本量、0 h/6 h/24 h AUROC 与重校准指标是否与 Figure 4、Table 3 一致
 
 ## 3. 方法学风险点
 
@@ -418,7 +419,8 @@ CHECKLIST_TEXT = """# 投稿前人工核对清单
 - [ ] Figure 1 队列流程是否清楚呈现纳入、排除和 0 h/6 h/24 h risk set
 - [ ] Figure 2 ROC 曲线字体、图例和线条是否清晰
 - [ ] Figure 3 calibration + DCA 是否能脱离正文理解
-- [ ] Figure 4 SHAP 是否标明“归因而非因果/可干预性”
+- [ ] Figure 4 eICU ROC 与 held-out hospital 重校准前后 calibration 是否清晰且数字一致
+- [ ] Supplementary Figure S6 SHAP 是否标明“归因而非因果/可干预性”
 - [ ] Table 1 是否包含必要临床基线特征
 - [ ] 表格缩写是否全部解释
 - [ ] Supplementary figures/tables 编号是否连续且与正文引用一致
@@ -435,9 +437,9 @@ CHECKLIST_TEXT = """# 投稿前人工核对清单
 
 - [ ] 删除或弱化 “clinically useful”“ready for deployment”“highly accurate”等过度表述
 - [ ] 避免把 SHAP 或 subgroup findings 写成因果或可干预因素证据
-- [ ] 强调 internal validation，避免暗示已外部验证
+- [ ] 明确区分内部验证、时间验证和特征协调的 eICU 外部验证，避免暗示完整 MIMIC-IV 模型已被逐变量直接外部验证
 - [ ] Discussion 中是否充分说明单中心、心脏手术占比高、无尿量、手术时间仅日期级等限制
-- [ ] Conclusion 是否保持克制，强调仍需外部/时间验证和前瞻性评估
+- [ ] Conclusion 是否保持克制，强调仍需本地重校准、前瞻性静默验证和临床工作流评估
 
 ## 7. 目标期刊格式
 
