@@ -257,18 +257,27 @@ def figure1_flowchart() -> pd.DataFrame:
     fig, ax = plt.subplots(figsize=(7.2, 6.0))
     ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.axis("off")
 
-    def box(x, y, w, h, title, subtitle="", color="#EAF1FE", edge="#5477C4"):
+    def box(
+        x, y, w, h, title, subtitle="", color="#EAF1FE", edge="#5477C4",
+        title_y=0.60, subtitle_y=0.25, title_fontsize=7, subtitle_fontsize=6.2,
+    ):
         patch = FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.03,rounding_size=0.08", facecolor=color, edgecolor=edge, linewidth=1.0)
         ax.add_patch(patch)
-        ax.text(x + w / 2, y + h * 0.60, title, ha="center", va="center", fontsize=7, fontweight="semibold", color=PALETTE["ink"], wrap=True)
+        ax.text(x + w / 2, y + h * title_y, title, ha="center", va="center", fontsize=title_fontsize, fontweight="semibold", color=PALETTE["ink"], wrap=True)
         if subtitle:
-            ax.text(x + w / 2, y + h * 0.25, subtitle, ha="center", va="center", fontsize=6.2, color=PALETTE["muted"])
+            ax.text(x + w / 2, y + h * subtitle_y, subtitle, ha="center", va="center", fontsize=subtitle_fontsize, color=PALETTE["muted"])
 
     def arrow(x1, y1, x2, y2):
         ax.add_patch(FancyArrowPatch((x1, y1), (x2, y2), arrowstyle="-|>", mutation_scale=10, linewidth=0.9, color=PALETTE["muted"]))
 
     box(3.2, 8.25, 3.6, 0.78, "Strict postoperative surgical ICU cohort", "n = 11,943")
-    box(0.05, 6.55, 2.95, 1.05, "Excluded from incident-AKI\nanalysis", "Prevalent/index AKI: 1,014\nNo baseline SCr: 50; no follow-up SCr: 2", "#FFF3EF", "#CC6F47")
+    box(
+        0.05, 6.40, 3.05, 1.24,
+        "Excluded from incident-AKI\nanalysis",
+        "Prevalent/index AKI: 1,014\nNo baseline SCr: 50; no follow-up SCr: 2",
+        "#FFF3EF", "#CC6F47", title_y=0.76, subtitle_y=0.25,
+        title_fontsize=6.7, subtitle_fontsize=5.8,
+    )
     box(3.2, 6.55, 3.6, 0.9, "Incident-AKI evaluable cohort", "n = 10,877")
     arrow(5.0, 8.25, 5.0, 7.45); arrow(3.2, 8.45, 2.1, 7.60)
     box(1.45, 4.75, 3.0, 0.9, "Final incident AKI", "n = 4,531 (41.7%)", "#EAF7EE", "#4A8B57")
