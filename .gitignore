@@ -1,0 +1,30 @@
+# Protected data and all derived patient-level artifacts
+data/
+outputs/
+notebooks/
+*.csv
+*.csv.gz
+*.parquet
+*.feather
+*.joblib
+*.pkl
+*.pickle
+
+# Local raw database roots and publication/QA artifacts
+mimic-iv-*/
+eicu-collaborative-research-database-*/
+qa/
+*.zip
+*.pdf
+*.png
+*.svg
+
+# Python, notebooks, and editor files
+.python-packages/
+.ipynb_checkpoints/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.DS_Store

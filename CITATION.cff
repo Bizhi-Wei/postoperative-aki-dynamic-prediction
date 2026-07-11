@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the associated manuscript and the archived release."
+title: "Dynamic prediction of incident postoperative acute kidney injury in surgical intensive care"
+type: software
+authors:
+  - family-names: Wei
+    given-names: Bizhi
+    affiliation: "Pu Ai Medical School, Shaoyang University"
+  - family-names: Yuan
+    given-names: Caiyun
+    affiliation: "Pu Ai Medical School, Shaoyang University"
+repository-code: "https://github.com/Bizhi-Wei/postoperative-aki-dynamic-prediction"

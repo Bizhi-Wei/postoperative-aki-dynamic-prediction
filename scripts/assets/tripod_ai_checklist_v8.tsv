@@ -1,0 +1,53 @@
+section	topic	item	applicability	checklist_item
+Title	Title	1	D;E	Identify the study as developing or evaluating a multivariable prediction model, the target population, and the outcome.
+Abstract	Abstract	2	D;E	Report the study according to the TRIPOD+AI for Abstracts checklist.
+Introduction	Background	3a	D;E	Explain the healthcare context and rationale, including existing prediction models.
+Introduction	Background	3b	D;E	Describe the target population, intended purpose, care pathway, and intended users.
+Introduction	Background	3c	D;E	Describe known health inequalities between sociodemographic groups.
+Introduction	Objectives	4	D;E	Specify the objectives and whether the study develops or evaluates a prediction model.
+Methods	Data	5a	D;E	Describe data sources, rationale, and representativeness separately for development and evaluation data.
+Methods	Data	5b	D;E	Specify the start and end dates of participant accrual and follow-up.
+Methods	Participants	6a	D;E	Describe the study setting, including number and location of centers.
+Methods	Participants	6b	D;E	Describe participant eligibility criteria.
+Methods	Participants	6c	D;E	Describe treatments received and how they were handled, if relevant.
+Methods	Data preparation	7	D;E	Describe data preprocessing and quality checking, including consistency across sociodemographic groups.
+Methods	Outcome	8a	D;E	Define the outcome and time horizon, how and when it was assessed, its rationale, and consistency across groups.
+Methods	Outcome	8b	D;E	For subjective outcomes, describe outcome assessor qualifications and demographic characteristics.
+Methods	Outcome	8c	D;E	Report actions used to blind outcome assessment.
+Methods	Predictors	9a	D	Describe the choice and any preselection of initial predictors.
+Methods	Predictors	9b	D;E	Define predictors, how and when they were measured, and any blinding.
+Methods	Predictors	9c	D;E	For subjectively interpreted predictors, describe assessor qualifications and demographic characteristics.
+Methods	Sample size	10	D;E	Explain how study size was determined and justify its sufficiency, including any calculation.
+Methods	Missing data	11	D;E	Describe how missing data were handled and reasons for omitting data.
+Methods	Analytical methods	12a	D	Describe how data were used for model development and evaluation, including partitioning.
+Methods	Analytical methods	12b	D	Describe predictor handling, including transformations and standardization.
+Methods	Analytical methods	12c	D	Specify model types, rationale, model-building steps, tuning, and internal validation.
+Methods	Analytical methods	12d	D;E	Describe handling and quantification of heterogeneity across clusters.
+Methods	Analytical methods	12e	D;E	Specify performance measures and plots, their rationale, and model comparisons.
+Methods	Analytical methods	12f	E	Describe model updating arising from evaluation.
+Methods	Analytical methods	12g	E	Describe how predictions were calculated during model evaluation.
+Methods	Class imbalance	13	D;E	Describe class-imbalance methods and any subsequent recalibration.
+Methods	Fairness	14	D;E	Describe approaches used to address model fairness and their rationale.
+Methods	Model output	15	D	Specify model output and any classification thresholds and how they were identified.
+Methods	Training versus evaluation	16	D;E	Identify differences between development and evaluation data.
+Methods	Ethical approval	17	D;E	Name the ethics committee and describe consent or waiver.
+Open science	Funding	18a	D;E	Report funding sources and funder roles.
+Open science	Conflicts of interest	18b	D;E	Declare conflicts of interest and financial disclosures.
+Open science	Protocol	18c	D;E	State where the protocol can be accessed or that no protocol was prepared.
+Open science	Registration	18d	D;E	Provide study registration or state that the study was not registered.
+Open science	Data sharing	18e	D;E	Describe availability of study data.
+Open science	Code sharing	18f	D;E	Describe availability of analytical code.
+Patient and public involvement	Patient and public involvement	19	D;E	Describe patient and public involvement or state that there was none.
+Results	Participants	20a	D;E	Describe participant flow, outcome counts, and follow-up time; consider a diagram.
+Results	Participants	20b	D;E	Report participant characteristics, dates, predictors, treatments, events, follow-up, missingness, and demographic differences.
+Results	Participants	20c	E	For model evaluation, compare distributions of important predictors and outcomes with development data.
+Results	Model development	21	D;E	Report participant and event counts for each analysis.
+Results	Model specification	22	D	Provide the full prediction model or accessible code/object/API and restrictions.
+Results	Model performance	23a	D;E	Report performance estimates with confidence intervals and key subgroup results.
+Results	Model performance	23b	D;E	Report heterogeneity in performance across clusters, if examined.
+Results	Model updating	24	E	Report any model updating and subsequent performance.
+Discussion	Interpretation	25	D;E	Interpret main results, including fairness, in relation to objectives and previous studies.
+Discussion	Limitations	26	D;E	Discuss limitations and effects on bias, uncertainty, and generalizability.
+Discussion	Usability	27a	D	Describe how poor-quality or unavailable input data should be handled during implementation.
+Discussion	Usability	27b	D	Describe required user interaction and expertise.
+Discussion	Usability	27c	D;E	Discuss next research steps for applicability and generalizability.
