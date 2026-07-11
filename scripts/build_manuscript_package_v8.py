@@ -52,8 +52,10 @@ ETHICS_STATEMENT = (
 AVAILABILITY_STATEMENT = (
     "MIMIC-IV version 3.1 is available through PhysioNet to credentialed users who complete the required training "
     "and sign the data use agreement. The authors are not permitted to redistribute patient-level MIMIC-IV data "
-    "or derived patient-level analytic datasets. The analytic code will be made available in a public repository "
-    "before publication; the repository URL and DOI are to be provided before publication."
+    "or derived patient-level analytic datasets. Analytic code is publicly available at "
+    "https://github.com/Bizhi-Wei/postoperative-aki-dynamic-prediction (release v1.0.1: "
+    "https://github.com/Bizhi-Wei/postoperative-aki-dynamic-prediction/releases/tag/v1.0.1). "
+    "The archived software DOI will be provided before publication."
 )
 FUNDING_STATEMENT = (
     "This research received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors."

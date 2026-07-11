@@ -261,7 +261,8 @@ def write_lock_files() -> None:
         "analysis, and assumption-driven selection-bias sensitivity.\n\n"
         "The v22 artifacts are research-use deployment candidates only. No universal clinical threshold, treatment recommendation, or claim of "
         "prospective clinical effectiveness is included.\n\n"
-        "Before submission: provide the public code-repository URL and archived DOI; refresh checklist page locations only after producing the final journal PDF.\n",
+        "The public code repository and v1.0.1 release are fixed at https://github.com/Bizhi-Wei/postoperative-aki-dynamic-prediction. "
+        "Before submission: provide the archived DOI; refresh checklist page locations only after producing the final journal PDF.\n",
         encoding="utf-8",
     )
     (OUT / "README.md").write_text(
@@ -270,7 +271,7 @@ def write_lock_files() -> None:
         f"- English main manuscript: LaTeX and Word\n- Supplementary material: LaTeX and Word\n"
         f"- References: {len(v8.REFS)} Vancouver-style entries\n- Main display items: 3 tables and 4 figures\n"
         f"- Additional file 1: Tables S1-S6 and Figures S1-S5\n- Additional file 2: TRIPOD+AI checklist\n"
-        f"- Status: locked research manuscript; repository identifier remains to be provided before publication.\n",
+        f"- Status: locked research manuscript; public repository and v1.0.1 release fixed; archived DOI remains to be provided before publication.\n",
         encoding="utf-8",
     )
     old = OUT / "author_action_required.md"
