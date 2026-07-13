@@ -317,7 +317,9 @@ def figure2_roc(predictions: dict[int, pd.DataFrame]) -> None:
         ax.plot([0, 1], [0, 1], color=PALETTE["muted"], linestyle=":", linewidth=0.8)
         ax.set(xlim=(0, 1), ylim=(0, 1), xlabel="1 − specificity", title=f"{h} h (n={len(data):,})")
         if panel == 0: ax.set_ylabel("Sensitivity")
-        panel_label(ax, chr(97 + panel))
+        # Keep ROC panel labels inside the plotting frame so panel ``a`` does
+        # not collide with the shared y-axis 1.0 tick label at final size.
+        panel_label(ax, chr(97 + panel), x=0.02, y=0.98)
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="upper center", bbox_to_anchor=(0.52, 1.04), ncol=4, frameon=False)
     fig.suptitle("Dynamic model discrimination across ICU landmarks", x=0.08, ha="left", fontsize=9, fontweight="bold", y=1.12)
