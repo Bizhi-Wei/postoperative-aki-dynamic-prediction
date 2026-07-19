@@ -4,6 +4,8 @@ Reproducible analytic code for a retrospective MIMIC-IV and eICU cohort study of
 
 The final locked manuscript reports a strict postoperative surgical ICU cohort, a timestamped KDIGO serum-creatinine incident-AKI outcome, landmark-specific datasets, internal and temporal validation, eICU feature-harmonized external validation, hospital-heldout recalibration, competing-risk sensitivity analyses, and assumption-driven selection-bias analyses.
 
+The post-lock v26 secondary phenotype analysis additionally characterizes maximum AKI severity, rapid reversal, persistent AKI beyond 48 hours, recurrent AKI, and observed seven-day/discharge recovery. It preserves explicit persistence and recovery evaluability flags so that missing repeat creatinine measurements are not interpreted as recovery.
+
 ## Scope and key design choices
 
 - Analysis unit: first qualifying ICU stay per hospital admission.
@@ -16,6 +18,8 @@ The final locked manuscript reports a strict postoperative surgical ICU cohort, 
 ## Repository contents
 
 - `scripts/`: cohort construction, outcome derivation, dynamic feature engineering, model development, validation, sensitivity, manuscript, and research-use deployment scripts.
+- `scripts/severe_persistent_aki_trajectories_v26.py`: serum-creatinine severity, persistence, recurrence, end-of-window recovery, RRT-overlay, observability, and descriptive outcome analysis.
+- `scripts/validate_severe_persistent_aki_trajectories_v26.py`: independent row-level consistency and audit-table reconciliation for v26.
 - `docs/`: cohort and reproducibility specifications.
 - `requirements.txt`: Python package requirements.
 - `.zenodo.json`: metadata for a release archive.
