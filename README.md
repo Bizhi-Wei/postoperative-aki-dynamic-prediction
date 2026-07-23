@@ -6,6 +6,8 @@ The final locked manuscript reports a strict postoperative surgical ICU cohort, 
 
 The post-lock v26 secondary phenotype analysis additionally characterizes maximum AKI severity, rapid reversal, persistent AKI beyond 48 hours, recurrent AKI, and observed seven-day/discharge recovery. It preserves explicit persistence and recovery evaluability flags so that missing repeat creatinine measurements are not interpreted as recovery.
 
+The post-lock v27 secondary modeling analysis predicts new active-episode SCr stage 2/3 AKI at 0, 6, and 24 hours while retaining stage 1 patients in the later risk sets. Separate onset-anchored models predict AKI persistence beyond 48 hours and nonrecovery at the observed seven-day/discharge end point; these recovery estimates are explicitly conditional on follow-up SCr observability.
+
 ## Scope and key design choices
 
 - Analysis unit: first qualifying ICU stay per hospital admission.
@@ -20,6 +22,8 @@ The post-lock v26 secondary phenotype analysis additionally characterizes maximu
 - `scripts/`: cohort construction, outcome derivation, dynamic feature engineering, model development, validation, sensitivity, manuscript, and research-use deployment scripts.
 - `scripts/severe_persistent_aki_trajectories_v26.py`: serum-creatinine severity, persistence, recurrence, end-of-window recovery, RRT-overlay, observability, and descriptive outcome analysis.
 - `scripts/validate_severe_persistent_aki_trajectories_v26.py`: independent row-level consistency and audit-table reconciliation for v26.
+- `scripts/secondary_severity_recovery_models_v27.py`: severe-AKI dynamic risk sets and onset-anchored persistence/nonrecovery model development with grouped internal validation.
+- `scripts/validate_secondary_severity_recovery_models_v27.py`: independent risk-set, timing, leakage, split, and metric validation for v27.
 - `docs/`: cohort and reproducibility specifications.
 - `requirements.txt`: Python package requirements.
 - `.zenodo.json`: metadata for a release archive.

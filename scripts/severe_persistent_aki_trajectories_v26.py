@@ -184,11 +184,14 @@ def build_measurement_states(cohort: pd.DataFrame, labs: pd.DataFrame) -> pd.Dat
                 float(lab.valuenum) - min(value for _, value in window) >= 0.3 - 1e-12
             )
             ratio = float(lab.valuenum) / baseline
-            if ratio >= 3.0 or float(lab.valuenum) >= 4.0:
+            active_aki = bool(ratio >= 1.5 or absolute_48h)
+            # An absolute SCr >=4 mg/dL upgrades *active AKI* to stage 3; it
+            # must not label a stable high-baseline SCr as incident AKI.
+            if active_aki and (ratio >= 3.0 or float(lab.valuenum) >= 4.0):
                 stage = 3
-            elif ratio >= 2.0:
+            elif active_aki and ratio >= 2.0:
                 stage = 2
-            elif ratio >= 1.5 or absolute_48h:
+            elif active_aki:
                 stage = 1
             else:
                 stage = 0
@@ -290,7 +293,9 @@ def derive_patient_phenotypes(
             "scr_observed_day2": bool(group["icu_day"].eq(2).any()) if len(group) else False,
             "scr_observed_day3": bool(group["icu_day"].eq(3).any()) if len(group) else False,
             "scr_observed_days5_7": bool(group["icu_day"].between(5, 7).any()) if len(group) else False,
-            "severe_aki_scr_stage2_3": bool(row.aki_stage_final >= 2),
+            "maximum_active_scr_stage_7d": int(group["aki_stage_at_measurement"].max())
+            if len(group)
+            else 0,
             "aki_duration_class": "No incident AKI",
             "persistence_evaluable": False,
             "persistent_aki_scr": pd.NA,
@@ -368,7 +373,7 @@ def derive_patient_phenotypes(
             end_stage = int(end_row["aki_stage_at_measurement"])
             end_recovered = bool(end_stage == 0)
             end_strict = bool(not end_row["strict_baseline_aki_active"])
-            partial = bool(0 < end_stage < int(row.aki_stage_final))
+            partial = bool(0 < end_stage < int(record["maximum_active_scr_stage_7d"]))
         else:
             end_row = None
             end_evaluable = False
@@ -430,13 +435,18 @@ def derive_patient_phenotypes(
     # De-fragment the wide inherited cohort before adding final phenotype fields.
     phenotypes = phenotypes.copy()
     phenotypes["rrt_within_7d"] = phenotypes["rrt_within_7d"].fillna(False).astype(bool)
+    phenotypes["severe_aki_scr_stage2_3"] = phenotypes["maximum_active_scr_stage_7d"].ge(2)
+    phenotypes["severity_stage_discordant_vs_locked_v3"] = (
+        phenotypes["maximum_active_scr_stage_7d"].astype(int)
+        != phenotypes["aki_stage_final"].fillna(0).astype(int)
+    )
     phenotypes["aki_stage_scr_or_rrt_7d"] = np.maximum(
-        phenotypes["aki_stage_final"].fillna(0).astype(int),
+        phenotypes["maximum_active_scr_stage_7d"].fillna(0).astype(int),
         np.where(phenotypes["rrt_within_7d"], 3, 0),
     )
     phenotypes["severe_aki_scr_or_rrt"] = phenotypes["aki_stage_scr_or_rrt_7d"].ge(2)
-    phenotypes["severity_group"] = phenotypes["aki_stage_final"].map(
-        {0.0: "No incident AKI", 1.0: "Stage 1 AKI", 2.0: "Stage 2 AKI", 3.0: "Stage 3 AKI"}
+    phenotypes["severity_group"] = phenotypes["maximum_active_scr_stage_7d"].map(
+        {0: "No incident AKI", 1: "Stage 1 AKI", 2: "Stage 2 AKI", 3: "Stage 3 AKI"}
     )
     return phenotypes
 
@@ -478,8 +488,8 @@ def bootstrap_crude_contrasts(phenotypes: pd.DataFrame, draws: int = 1000) -> pd
     contrasts = [
         (
             "Severe stage 2/3 vs stage 1",
-            aki["aki_stage_final"].ge(2),
-            aki["aki_stage_final"].eq(1),
+            aki["maximum_active_scr_stage_7d"].ge(2),
+            aki["maximum_active_scr_stage_7d"].eq(1),
         ),
         (
             "Persistent AKI vs rapid sustained reversal",
@@ -579,7 +589,11 @@ def make_audits(phenotypes: pd.DataFrame, states: pd.DataFrame) -> dict[str, pd.
     aki = phenotypes.loc[phenotypes["aki_final"]].copy()
     severity = pd.concat(
         [
-            count_table(phenotypes["severity_group"], len(phenotypes), "maximum SCr stage"),
+            count_table(
+                phenotypes["severity_group"],
+                len(phenotypes),
+                "maximum active-episode SCr stage",
+            ),
             count_table(
                 phenotypes["severe_aki_scr_stage2_3"].map({True: "Severe AKI (stage 2/3)", False: "No severe AKI"}),
                 len(phenotypes),
@@ -632,8 +646,8 @@ def make_audits(phenotypes: pd.DataFrame, states: pd.DataFrame) -> dict[str, pd.
     groups = {
         "Full cohort": phenotypes,
         "Any incident AKI": aki,
-        "Stage 1 AKI": aki.loc[aki["aki_stage_final"].eq(1)],
-        "Stage 2/3 AKI": aki.loc[aki["aki_stage_final"].ge(2)],
+        "Stage 1 AKI": aki.loc[aki["maximum_active_scr_stage_7d"].eq(1)],
+        "Stage 2/3 AKI": aki.loc[aki["maximum_active_scr_stage_7d"].ge(2)],
     }
     for label, subset in groups.items():
         obs_rows.append(
@@ -727,7 +741,11 @@ def make_audits(phenotypes: pd.DataFrame, states: pd.DataFrame) -> dict[str, pd.
 
     outcomes = pd.concat(
         [
-            outcome_summary(phenotypes, "severity_group", "maximum SCr severity"),
+            outcome_summary(
+                phenotypes,
+                "severity_group",
+                "maximum active-episode SCr severity",
+            ),
             outcome_summary(aki, "aki_duration_class", "48 h duration phenotype"),
             outcome_summary(aki, "renal_trajectory_group", "renal trajectory"),
         ],
@@ -766,7 +784,7 @@ def make_main_figure(phenotypes: pd.DataFrame, audits: dict[str, pd.DataFrame]) 
     ax_a.set_xlim(0, 100)
     ax_a.set_yticks([])
     ax_a.set_xlabel("Percentage of strict cohort")
-    ax_a.set_title(f"Maximum SCr severity (n={len(phenotypes):,})", loc="left", fontweight="bold")
+    ax_a.set_title(f"Maximum active-episode SCr severity (n={len(phenotypes):,})", loc="left", fontweight="bold")
     ax_a.legend(loc="upper center", bbox_to_anchor=(0.5, -0.26), ncol=2, frameon=False)
     panel_label(ax_a, "a")
 
@@ -903,6 +921,7 @@ def write_reports(phenotypes: pd.DataFrame, audits: dict[str, pd.DataFrame]) -> 
     strict_recovered_end = int(end_eval["recovered_at_end_strict_baseline"].sum())
     rrt_n = int(phenotypes["rrt_within_7d"].sum())
     severe_scr_rrt_n = int(phenotypes["severe_aki_scr_or_rrt"].sum())
+    severity_discordant_n = int(phenotypes["severity_stage_discordant_vs_locked_v3"].sum())
     persistent_eval_n = int(aki["persistence_evaluable"].sum())
     persistent_nonrec = int((aki["renal_trajectory_group"] == "Persistent AKI without recovery").sum())
     persistent_rec = int((aki["renal_trajectory_group"] == "Persistent AKI with recovery").sum())
@@ -913,6 +932,7 @@ def write_reports(phenotypes: pd.DataFrame, audits: dict[str, pd.DataFrame]) -> 
 
 - The strict evaluable cohort contained **{len(phenotypes):,}** admissions and **{len(aki):,}** incident SCr-AKI events.
 - Severe SCr AKI (KDIGO stage 2 or 3) occurred in **{format_n_pct(severe, len(phenotypes))}** of the full cohort and **{format_n_pct(severe, len(aki))}** of AKI cases.
+- Active-episode restaging differed from the locked peak-based v3 stage in **{severity_discordant_n:,}** rows; the legacy field is retained for audit, while severity analyses use `maximum_active_scr_stage_7d`.
 - Seven-day ICU RRT procedure evidence was present in **{format_n_pct(rrt_n, len(phenotypes))}**. Adding RRT as KDIGO stage 3 increased the severe-outcome sensitivity count to **{format_n_pct(severe_scr_rrt_n, len(phenotypes))}**; this overlay does not replace the locked SCr primary outcome.
 - AKI persistence was classifiable in **{format_n_pct(persistent_eval_n, len(aki))}**. Among all AKI cases, rapid sustained reversal occurred in **{format_n_pct(rapid_sustained_n, len(aki))}**, rapid reversal followed by recurrent AKI in **{format_n_pct(rapid_recurrent_n, len(aki))}**, and persistent AKI in **{format_n_pct(persistent_n, len(aki))}**.
 - End-of-observation recovery was evaluable in **{format_n_pct(len(end_eval), len(aki))}** using a creatinine measured within 24 h of hospital discharge or ICU day 7, whichever came first. Complete KDIGO-SCr reversal was observed in **{format_n_pct(recovered_end, len(end_eval))}**; the conservative baseline-referenced sensitivity definition yielded **{format_n_pct(strict_recovered_end, len(end_eval))}**.
@@ -932,7 +952,7 @@ Use this as a prespecified secondary phenotype analysis after the locked any-AKI
 
 ## Definitions
 
-- **Severe AKI:** maximum KDIGO SCr stage 2 or 3 within seven days after ICU admission. RRT within seven days is reported separately and upgrades severity to stage 3 only in the sensitivity field `aki_stage_scr_or_rrt_7d`.
+- **Severe AKI:** maximum *active-episode* KDIGO SCr stage 2 or 3 within seven days after ICU admission. An SCr >=4 mg/dL upgrades active AKI to stage 3 but does not create incident AKI in a stable high-baseline patient. The legacy `aki_stage_final` is retained for audit; secondary severity analyses use `maximum_active_scr_stage_7d`. RRT within seven days is reported separately and upgrades severity to stage 3 only in the sensitivity field `aki_stage_scr_or_rrt_7d`.
 - **Active SCr AKI at a measurement:** SCr ratio >=1.5 versus baseline, SCr >=4.0 mg/dL for stage 3, or a >=0.3 mg/dL rise from a prior SCr in the preceding 48 h.
 - **Rapid reversal:** first observed measurement without active KDIGO SCr AKI within 48 h after AKI onset.
 - **Persistent AKI:** no rapid reversal and an observed AKI-positive SCr measurement at least 48 h after onset.

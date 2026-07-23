@@ -59,11 +59,12 @@ def main() -> None:
     )
     scr = states["scr_mg_dl"].to_numpy(float)
     absolute = states["aki_absolute_0_3_within_prior_48h"].astype(bool).to_numpy()
+    active = (ratio >= 1.5) | absolute
     expected = np.select(
         [
-            (ratio >= 3.0) | (scr >= 4.0),
-            ratio >= 2.0,
-            (ratio >= 1.5) | absolute,
+            active & ((ratio >= 3.0) | (scr >= 4.0)),
+            active & (ratio >= 2.0),
+            active,
         ],
         [3, 2, 1],
         default=0,
@@ -73,10 +74,23 @@ def main() -> None:
         fail(f"Measurement-stage recomputation mismatch: {mismatch}")
     checks.append(f"PASS: independently recomputed all {len(states):,} measurement-level stages")
 
-    severe_expected = cohort["aki_stage_final"].ge(2)
+    active_max = (
+        states.groupby("stay_id")["aki_stage_at_measurement"]
+        .max()
+        .reindex(cohort["stay_id"])
+        .fillna(0)
+        .astype(int)
+        .reset_index(drop=True)
+    )
+    if not active_max.equals(cohort["maximum_active_scr_stage_7d"].astype(int).reset_index(drop=True)):
+        fail("Maximum active-episode stage does not reconcile with measurement states")
+    severe_expected = active_max.ge(2)
     if not severe_expected.equals(cohort["severe_aki_scr_stage2_3"].astype(bool)):
         fail("Severe-AKI flag does not equal original SCr stage 2/3")
-    checks.append(f"PASS: severe SCr AKI flag recomputed (n={int(severe_expected.sum()):,})")
+    checks.append(
+        f"PASS: maximum active-episode stage and severe SCr AKI flag recomputed "
+        f"(n={int(severe_expected.sum()):,})"
+    )
 
     state_groups = {stay: group.sort_values("charttime") for stay, group in states.groupby("stay_id")}
     checked_aki = 0
