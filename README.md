@@ -8,6 +8,8 @@ The post-lock v26 secondary phenotype analysis additionally characterizes maximu
 
 The post-lock v27 secondary modeling analysis predicts new active-episode SCr stage 2/3 AKI at 0, 6, and 24 hours while retaining stage 1 patients in the later risk sets. Separate onset-anchored models predict AKI persistence beyond 48 hours and nonrecovery at the observed seven-day/discharge end point; these recovery estimates are explicitly conditional on follow-up SCr observability.
 
+The v31 audit evaluates model-family selection entirely within the original 80% training partition using five outer and four inner stratified subject-grouped folds. The corresponding manuscript supplement also consolidates the existing eICU outcome-observability comparison, cross-fitted inverse-probability-weighted and pattern-mixture analyses, and strict pre-ICU baseline-creatinine sensitivity analysis.
+
 ## Scope and key design choices
 
 - Analysis unit: first qualifying ICU stay per hospital admission.
@@ -24,6 +26,9 @@ The post-lock v27 secondary modeling analysis predicts new active-episode SCr st
 - `scripts/validate_severe_persistent_aki_trajectories_v26.py`: independent row-level consistency and audit-table reconciliation for v26.
 - `scripts/secondary_severity_recovery_models_v27.py`: severe-AKI dynamic risk sets and onset-anchored persistence/nonrecovery model development with grouped internal validation.
 - `scripts/validate_secondary_severity_recovery_models_v27.py`: independent risk-set, timing, leakage, split, and metric validation for v27.
+- `scripts/training_only_nested_grouped_cv_v31.py`: leakage-controlled training-only nested grouped model-family selection audit.
+- `scripts/build_secondary_manuscript_v31.py`: manuscript and supplementary package builder with Tables S1–S12.
+- `scripts/validate_secondary_manuscript_v31.py`: independent scientific, numbering, source-value, and package-consistency checks for v31.
 - `docs/`: cohort and reproducibility specifications.
 - `requirements.txt`: Python package requirements.
 - `.zenodo.json`: metadata for a release archive.
@@ -48,7 +53,7 @@ Run scripts in numbered analytic order. Later stages read the versioned aggregat
 
 ## Reproducibility and limitations
 
-The final model specifications are XGBoost with 36 predictors at 0 hours, XGBoost with 72 predictors at 6 hours, and logistic regression with 72 predictors at 24 hours. Before any implementation outside the development setting, prospective silent validation, local probability recalibration, data-quality mapping, governance review, and a clinician-approved response pathway are required.
+The frozen reported model specifications are XGBoost with 36 predictors at 0 hours, XGBoost with 72 predictors at 6 hours, and logistic regression with 72 predictors at 24 hours. The retrospective training-only AUROC audit preferred XGBoost at all three landmarks, but the 24-hour training OOF AUROC margin over logistic regression was only 0.001. The manuscript reports this instability and retains the previously frozen 24-hour logistic external analysis rather than switching models after the audit. Before any implementation outside the development setting, prospective silent validation, local probability recalibration, data-quality mapping, governance review, and a clinician-approved response pathway are required.
 
 Selection-bias analyses quantify robustness under stated missing-data assumptions; they do not establish that outcome-observability bias has been removed. SHAP values and secondary adjusted associations are predictive/prognostic quantities, not causal effects or proof of modifiability.
 
