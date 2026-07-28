@@ -1,6 +1,6 @@
 {
   "title": "Dynamic prediction of incident postoperative acute kidney injury in surgical intensive care",
-  "description": "Reproducible code for dynamic prediction of serum-creatinine-defined incident postoperative acute kidney injury using MIMIC-IV and eICU, including temporal and external validation, recalibration, competing-risk sensitivity analyses, and selection-bias sensitivity analyses. No patient-level data are included.",
+  "description": "Reproducible code for dynamic prediction of serum-creatinine-defined incident postoperative acute kidney injury using MIMIC-IV and eICU, including temporal and external validation, recalibration, competing-risk analyses, training-only nested subject-grouped model-selection auditing, and eICU outcome-observability and selection-bias sensitivities. No patient-level data are included.",
   "creators": [
     {
       "name": "Wei, Bizhi",

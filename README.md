@@ -59,4 +59,4 @@ Selection-bias analyses quantify robustness under stated missing-data assumption
 
 ## Citation
 
-Please cite the associated manuscript and the archived software release. The software archive DOI will be added after the first Zenodo release is published.
+Please cite the associated manuscript and software release v1.0.3. The software archive DOI will be added after the Zenodo archive is published.

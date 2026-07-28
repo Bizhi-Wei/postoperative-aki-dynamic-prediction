@@ -50,7 +50,7 @@ def main() -> None:
     check("Bizhi Wei" in combined and "15619056250wbz@gmail.com" in combined, "Author and correspondence are present", results)
     check("[AUTHOR ACTION REQUIRED]" not in combined, "No author-action placeholder remains", results)
     check("to be provided before publication" in combined, "Only intentional archive-DOI placeholder remains", results)
-    check("v1.0.2" in combined, "Repository release v1.0.2 remains cited", results)
+    check("v1.0.3" in combined and "v1.0.2" not in combined, "Repository release v1.0.3 is cited consistently", results)
     check("Supplementary Tables S1–S12" in word, "Word main file reports Tables S1–S12", results)
     check("Supplementary Figures S1–S7" in word, "Word main file reports Figures S1–S7", results)
     check("Supplementary Tables S1--S12" in tex, "LaTeX main file reports Tables S1–S12", results)

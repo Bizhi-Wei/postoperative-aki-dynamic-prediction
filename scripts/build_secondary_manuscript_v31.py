@@ -107,7 +107,9 @@ COMPETING = b.COMPETING
 CONTRIBUTIONS = b.CONTRIBUTIONS
 ACKNOWLEDGEMENTS = b.ACKNOWLEDGEMENTS
 AI_DISCLOSURE = b.AI_DISCLOSURE
-AVAILABILITY = b.AVAILABILITY
+AVAILABILITY = b.AVAILABILITY.replace("v1.0.2", "v1.0.3")
+b.AVAILABILITY = AVAILABILITY
+b.m.AVAILABILITY = AVAILABILITY
 FIGURE_SOURCES = b.FIGURE_SOURCES
 FIGURE_LEGENDS = b.FIGURE_LEGENDS
 SUPP_FIGURE_LEGENDS = b.SUPP_FIGURE_LEGENDS
@@ -754,7 +756,7 @@ This package preserves v30 and adds two requested audit layers.
 - New Table S11: complete eICU outcome-observability and evaluable-versus-unevaluable audit
 - New Table S12: eICU IPW, pattern-mixture, and strict pre-ICU baseline sensitivities
 - External sensitivity boundary: Tables S11–S12 concern the previously defined any-stage incident SCr-AKI endpoint and are explicitly distinguished from the severe-AKI external models
-- Repository release cited in the manuscript: v1.0.2
+- Repository release cited in the manuscript: v1.0.3
 - Archived DOI: to be provided before publication
 
 The locked test partition, scientific outcome counts, figures, and previously reported held-out/external performance estimates were not changed.
