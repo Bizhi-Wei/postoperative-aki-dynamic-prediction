@@ -7,5 +7,6 @@ authors:
     given-names: Bizhi
     affiliation: "Pu Ai Medical School, Shaoyang University"
 repository-code: "https://github.com/Bizhi-Wei/postoperative-aki-dynamic-prediction"
+doi: "10.5281/zenodo.21640763"
 version: "1.0.4"
 date-released: "2026-07-28"

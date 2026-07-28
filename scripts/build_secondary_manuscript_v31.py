@@ -107,7 +107,16 @@ COMPETING = b.COMPETING
 CONTRIBUTIONS = b.CONTRIBUTIONS
 ACKNOWLEDGEMENTS = b.ACKNOWLEDGEMENTS
 AI_DISCLOSURE = b.AI_DISCLOSURE
-AVAILABILITY = b.AVAILABILITY.replace("v1.0.2", "v1.0.3")
+RELEASE_VERSION = "v1.0.4"
+ARCHIVE_VERSION_DOI = "10.5281/zenodo.21640763"
+ARCHIVE_CONCEPT_DOI = "10.5281/zenodo.21640762"
+AVAILABILITY = (
+    b.AVAILABILITY.replace("v1.0.2", RELEASE_VERSION)
+    .replace(
+        "to be provided before publication.",
+        f"{ARCHIVE_VERSION_DOI} (https://doi.org/{ARCHIVE_VERSION_DOI}).",
+    )
+)
 b.AVAILABILITY = AVAILABILITY
 b.m.AVAILABILITY = AVAILABILITY
 FIGURE_SOURCES = b.FIGURE_SOURCES
@@ -587,6 +596,19 @@ def write_latex(tables: dict[str, list[dict[str, object]]]) -> None:
     text = main_path.read_text(encoding="utf-8").replace(
         "Supplementary Tables S1--S9", "Supplementary Tables S1--S12"
     )
+    for plain_url in [
+        "https://github.com/Bizhi-Wei/postoperative-aki-dynamic-prediction/releases/tag/v1.0.4",
+        "https://doi.org/10.5281/zenodo.21640763",
+        "https://github.com/Bizhi-Wei/postoperative-aki-dynamic-prediction",
+    ]:
+        text = text.replace(plain_url, rf"\url{{{plain_url}}}")
+    text = text.replace(
+        r"\subsection*{Availability of data and materials}",
+        r"\subsection*{Availability of data and materials}\begingroup\sloppy ",
+    ).replace(
+        r"\cite{MIMIC2024,Pollard2018}",
+        r"\cite{MIMIC2024,Pollard2018}\par\endgroup",
+    )
     main_path.write_text(text, encoding="utf-8")
     supp_path = LATEX / "supplement.tex"
     text = supp_path.read_text(encoding="utf-8")
@@ -756,8 +778,9 @@ This package preserves v30 and adds two requested audit layers.
 - New Table S11: complete eICU outcome-observability and evaluable-versus-unevaluable audit
 - New Table S12: eICU IPW, pattern-mixture, and strict pre-ICU baseline sensitivities
 - External sensitivity boundary: Tables S11–S12 concern the previously defined any-stage incident SCr-AKI endpoint and are explicitly distinguished from the severe-AKI external models
-- Repository release cited in the manuscript: v1.0.3
-- Archived DOI: to be provided before publication
+- Repository release cited in the manuscript: {RELEASE_VERSION}
+- Archived version DOI: {ARCHIVE_VERSION_DOI}
+- Archived concept DOI: {ARCHIVE_CONCEPT_DOI}
 
 The locked test partition, scientific outcome counts, figures, and previously reported held-out/external performance estimates were not changed.
 """

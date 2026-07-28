@@ -1,5 +1,7 @@
 # Dynamic prediction of incident postoperative AKI in surgical intensive care
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21640762.svg)](https://doi.org/10.5281/zenodo.21640762)
+
 Reproducible analytic code for a retrospective MIMIC-IV and eICU cohort study of dynamic prediction of serum-creatinine-defined postoperative acute kidney injury (AKI) at ICU admission, 6 hours, and 24 hours.
 
 The final locked manuscript reports a strict postoperative surgical ICU cohort, a timestamped KDIGO serum-creatinine incident-AKI outcome, landmark-specific datasets, internal and temporal validation, eICU feature-harmonized external validation, hospital-heldout recalibration, competing-risk sensitivity analyses, and assumption-driven selection-bias analyses.
@@ -59,4 +61,4 @@ Selection-bias analyses quantify robustness under stated missing-data assumption
 
 ## Citation
 
-Please cite the associated manuscript and software release v1.0.4. The software archive DOI will be added after the Zenodo archive is published.
+Please cite the associated manuscript and the archived software release v1.0.4 ([GitHub release](https://github.com/Bizhi-Wei/postoperative-aki-dynamic-prediction/releases/tag/v1.0.4); [version DOI: 10.5281/zenodo.21640763](https://doi.org/10.5281/zenodo.21640763)). The concept DOI for all archived versions is [10.5281/zenodo.21640762](https://doi.org/10.5281/zenodo.21640762).
